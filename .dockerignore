@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/*.user
+**/*.suo
+**/*.pdb
+**/*.db
+**/*.log
+**/node_modules/
+Dockerfile*
+docker-compose*
+.env
+.git
+.gitignore
+README.md
+/vsdbg
