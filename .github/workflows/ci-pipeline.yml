@@ -16,9 +16,11 @@ jobs:
         include:
           - dockerfile: src/services/IACS.Api/Dockerfile
             image-name: iacs-api
+            context: src/services
 
           - dockerfile: src/client/Dockerfile
             image-name: iacs-client
+            context: src/client
 
     steps:
       - name: Checkout code
