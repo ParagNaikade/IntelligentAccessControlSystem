@@ -44,4 +44,4 @@ jobs:
             --cache-to=type=local,dest=/tmp/.buildx-cache \
             -f ${{ matrix.dockerfile }} \
             -t ${{ matrix.image-name }} \
-            --load .
+            --load ${{ matrix.context }}
