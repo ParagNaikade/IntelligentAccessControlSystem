@@ -1,25 +1,25 @@
-# Base runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
-# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IACS.Api/IACS.Api.csproj", "."]
-RUN dotnet restore "./IACS.Api.csproj"
+
+COPY ["Iacs.Api/Iacs.Api.csproj", "Iacs.Api/"]
+
+RUN dotnet restore "Iacs.Api/Iacs.Api.csproj"
+
 COPY . .
-RUN dotnet build "./IACS.Api.csproj" -c $BUILD_CONFIGURATION -o /src/build
 
-# Publish stage
+RUN dotnet build "Iacs.Api/Iacs.Api.csproj" -c Release -o /app/build --no-restore
+
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./IACS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Iacs.Api/Iacs.Api.csproj" -c Release -o /app/publish --no-restore
 
-# Final runtime image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "IACS.Api.dll"]
+
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+
+ENTRYPOINT ["dotnet", "Iacs.Api.dll"]
