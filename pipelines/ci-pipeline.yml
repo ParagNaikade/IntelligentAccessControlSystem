@@ -1,0 +1,52 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - master
+
+pr:
+  branches:
+    include:
+      - develop
+      - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - checkout: self
+
+  - task: Cache@2
+    inputs:
+      key: "buildx | $(Agent.OS) | iacs-api"
+      restoreKeys: |
+        buildx | $(Agent.OS)
+      path: /tmp/.buildx-cache
+  - script: |
+      docker buildx create --use
+    displayName: "Set up Docker Buildx"
+
+  - script: |
+      docker buildx build \
+        --cache-from=type=local,src=/tmp/.buildx-cache \
+        --cache-to=type=local,dest=/tmp/.buildx-cache \
+        -f src/services/IACS.Api/Dockerfile \
+        -t iacs-api \
+        --load src/services
+    displayName: "Build iacs-api Docker image"
+
+  - task: Cache@2
+    inputs:
+      key: "buildx | $(Agent.OS) | iacs-client"
+      restoreKeys: |
+        buildx | $(Agent.OS)
+      path: /tmp/.buildx-cache
+
+  - script: |
+      docker buildx build \
+        --cache-from=type=local,src=/tmp/.buildx-cache \
+        --cache-to=type=local,dest=/tmp/.buildx-cache \
+        -f src/client/Dockerfile \
+        -t iacs-client \
+        --load src/client
+    displayName: "Build iacs-client Docker image"
