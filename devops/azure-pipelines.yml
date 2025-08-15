@@ -24,7 +24,7 @@ variables:
 
 stages:
   - stage: Build
-    displayName: Build Docker Images (CI Only)
+    displayName: Build Docker Images
     jobs:
 
       - job: BuildClient
@@ -35,18 +35,14 @@ stages:
               $ctx = "$(clientCtx)"
               $df  = Join-Path $ctx "Dockerfile"
 
-              $cache = ""
-              if (docker image inspect "$img:latest" *> $null) {
-                $cache = "--cache-from=$img:latest"
-              }
+              Write-Host "Building $img:$env:tag from context $ctx"
 
               docker build `
-                $cache `
                 -t "$img:$(tag)" `
                 -t "$img:latest" `
                 -f "$df" `
                 "$ctx"
-            displayName: Build client (with local cache)
+            displayName: Build client
 
       - job: BuildAPI
         displayName: Build API Image
@@ -56,15 +52,11 @@ stages:
               $ctx = "$(apiCtx)"
               $df  = Join-Path $ctx "Dockerfile"
 
-              $cache = ""
-              if (docker image inspect "$img:latest" *> $null) {
-                $cache = "--cache-from=$img:latest"
-              }
+              Write-Host "Building $img:$env:tag from context $ctx"
 
               docker build `
-                $cache `
                 -t "$img:$(tag)" `
                 -t "$img:latest" `
                 -f "$df" `
                 "$ctx"
-            displayName: Build API (with local cache)
+            displayName: Build API
