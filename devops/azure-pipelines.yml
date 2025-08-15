@@ -1,7 +1,16 @@
 name: Intelligent Access Control - CI
 
 trigger:
-  - develop
+  branches:
+    include:
+      - develop
+      - master
+
+pr:
+  branches:
+    include:
+      - develop
+      - master
 
 pool:
   name: SelfHosted
