@@ -26,10 +26,11 @@ stages:
   - stage: Build
     displayName: Build Docker Images (CI Only)
     jobs:
+
       - job: BuildClient
         displayName: Build Client Image
         steps:
-          - script: |
+          - powershell: |
               $img = "$(clientImage)"
               $ctx = "$(clientCtx)"
               $df  = Join-Path $ctx "Dockerfile"
@@ -50,7 +51,7 @@ stages:
       - job: BuildAPI
         displayName: Build API Image
         steps:
-          - script: |
+          - powershell: |
               $img = "$(apiImage)"
               $ctx = "$(apiCtx)"
               $df  = Join-Path $ctx "Dockerfile"
