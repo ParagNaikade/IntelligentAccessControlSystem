@@ -1,15 +1,8 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - develop
 
-resources:
-- repo: self
-
 pool:
- name: SelfHosted
+  name: SelfHosted
 
 variables:
   tag: '$(Build.BuildId)'
@@ -21,7 +14,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: ubuntu-latest
+      name: SelfHosted
     steps:
     - task: Docker@2
       displayName: Build an image
