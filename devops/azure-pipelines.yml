@@ -20,7 +20,7 @@ variables:
   clientImage: local/intelligent-access-control-client
   apiImage: local/intelligent-access-control-api
   clientCtx: "$(Build.SourcesDirectory)/src/client"
-  apiCtx: "$(Build.SourcesDirectory)/src/services"
+  apiCtx: "$(Build.SourcesDirectory)/src/services/IACS.Api"
 
 stages:
   - stage: Build
