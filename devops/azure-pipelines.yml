@@ -34,12 +34,13 @@ stages:
               $img = "$(clientImage)"
               $ctx = "$(clientCtx)"
               $df  = Join-Path $ctx "Dockerfile"
+              $tag = "$(tag)"
 
-              Write-Host "Building $img:$env:tag from context $ctx"
+              Write-Host "Building $($img):$tag from context $ctx"
 
               docker build `
-                -t "$img:$(tag)" `
-                -t "$img:latest" `
+                -t "$($img):$tag" `
+                -t "$($img):latest" `
                 -f "$df" `
                 "$ctx"
             displayName: Build client
@@ -51,12 +52,13 @@ stages:
               $img = "$(apiImage)"
               $ctx = "$(apiCtx)"
               $df  = Join-Path $ctx "Dockerfile"
+              $tag = "$(tag)"
 
-              Write-Host "Building $img:$env:tag from context $ctx"
+              Write-Host "Building $($img):$tag from context $ctx"
 
               docker build `
-                -t "$img:$(tag)" `
-                -t "$img:latest" `
+                -t "$($img):$tag" `
+                -t "$($img):latest" `
                 -f "$df" `
                 "$ctx"
             displayName: Build API
