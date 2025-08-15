@@ -1,0 +1,63 @@
+name: Intelligent Access Control – CI
+
+trigger:
+  branches:
+    include:
+      - develop
+      - master
+
+pr:
+  branches:
+    include:
+      - develop
+      - master
+
+pool:
+  name: SelfHosted
+
+variables:
+  tag: "$(Build.BuildId)"
+  clientImage: local/intelligent-access-control-client
+  apiImage: local/intelligent-access-control-api
+  clientCtx: "$(Build.SourcesDirectory)/src/client"
+  apiCtx: "$(Build.SourcesDirectory)/src/services/IACS.Api"
+
+stages:
+  - stage: Build
+    displayName: Build Docker Images
+    jobs:
+      - job: BuildClient
+        displayName: Build Client Image
+        steps:
+          - powershell: |
+              $img = "$(clientImage)"
+              $ctx = "$(clientCtx)"
+              $df  = Join-Path $ctx "Dockerfile"
+              $tag = "$(tag)"
+
+              Write-Host "Building $($img):$tag from context $ctx"
+
+              docker build `
+                -t "$($img):$tag" `
+                -t "$($img):latest" `
+                -f "$df" `
+                "$ctx"
+            displayName: Build client
+
+      - job: BuildAPI
+        displayName: Build API Image
+        steps:
+          - powershell: |
+              $img = "$(apiImage)"
+              $ctx = "$(apiCtx)"
+              $df  = Join-Path $ctx "Dockerfile"
+              $tag = "$(tag)"
+
+              Write-Host "Building $($img):$tag from context $ctx"
+
+              docker build `
+                -t "$($img):$tag" `
+                -t "$($img):latest" `
+                -f "$df" `
+                "$ctx"
+            displayName: Build API
