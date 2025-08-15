@@ -1,0 +1,38 @@
+name: Intelligent Access Control - CI
+
+trigger:
+  - develop
+
+pool:
+  name: SelfHosted
+
+variables:
+  tag: "$(Build.BuildId)"
+  clientImage: local/intelligent-access-control-client
+  apiImage: local/intelligent-access-control-api
+
+stages:
+  - stage: Build
+    displayName: Build Docker Images (CI Only)
+    jobs:
+      - job: BuildClient
+        displayName: Build Client Image
+        steps:
+          - script: |
+              docker build ^
+                --cache-from=$(clientImage):latest ^
+                -t $(clientImage):$(tag) ^
+                -t $(clientImage):latest ^
+                -f "$(Build.SourcesDirectory)/src/client/Dockerfile" .
+            displayName: Build client (with cache)
+
+      - job: BuildAPI
+        displayName: Build API Image
+        steps:
+          - script: |
+              docker build ^
+                --cache-from=$(apiImage):latest ^
+                -t $(apiImage):$(tag) ^
+                -t $(apiImage):latest ^
+                -f "$(Build.SourcesDirectory)/src/services/IACS.Api/Dockerfile" .
+            displayName: Build API (with cache)
