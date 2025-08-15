@@ -1,4 +1,4 @@
-name: Intelligent Access Control - CI
+name: Intelligent Access Control – CI
 
 trigger:
   branches:
@@ -19,6 +19,8 @@ variables:
   tag: "$(Build.BuildId)"
   clientImage: local/intelligent-access-control-client
   apiImage: local/intelligent-access-control-api
+  clientCtx: "$(Build.SourcesDirectory)/src/client"
+  apiCtx: "$(Build.SourcesDirectory)/src/services/IACS.Api"
 
 stages:
   - stage: Build
@@ -28,20 +30,40 @@ stages:
         displayName: Build Client Image
         steps:
           - script: |
-              docker build ^
-                --cache-from=$(clientImage):latest ^
-                -t $(clientImage):$(tag) ^
-                -t $(clientImage):latest ^
-                -f "$(Build.SourcesDirectory)/src/client/Dockerfile" .
-            displayName: Build client (with cache)
+              $img = "$(clientImage)"
+              $ctx = "$(clientCtx)"
+              $df  = Join-Path $ctx "Dockerfile"
+
+              $cache = ""
+              if (docker image inspect "$img:latest" *> $null) {
+                $cache = "--cache-from=$img:latest"
+              }
+
+              docker build `
+                $cache `
+                -t "$img:$(tag)" `
+                -t "$img:latest" `
+                -f "$df" `
+                "$ctx"
+            displayName: Build client (with local cache)
 
       - job: BuildAPI
         displayName: Build API Image
         steps:
           - script: |
-              docker build ^
-                --cache-from=$(apiImage):latest ^
-                -t $(apiImage):$(tag) ^
-                -t $(apiImage):latest ^
-                -f "$(Build.SourcesDirectory)/src/services/IACS.Api/Dockerfile" .
-            displayName: Build API (with cache)
+              $img = "$(apiImage)"
+              $ctx = "$(apiCtx)"
+              $df  = Join-Path $ctx "Dockerfile"
+
+              $cache = ""
+              if (docker image inspect "$img:latest" *> $null) {
+                $cache = "--cache-from=$img:latest"
+              }
+
+              docker build `
+                $cache `
+                -t "$img:$(tag)" `
+                -t "$img:latest" `
+                -f "$df" `
+                "$ctx"
+            displayName: Build API (with local cache)
